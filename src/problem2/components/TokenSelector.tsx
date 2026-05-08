@@ -3,7 +3,7 @@
 import React, { useState, useRef, useMemo, useEffect } from "react"
 import { Token } from "../types"
 import { ChevronDown, Search } from "lucide-react"
-import { useOutsideClick } from "../hooks/useOutsideClick"
+import { useDismiss } from "../hooks/useDismiss"
 
 interface TokenSelectorProps {
   tokens: Token[]
@@ -35,7 +35,7 @@ export const TokenSelector: React.FC<TokenSelectorProps> = ({ tokens, selectedTo
   const [searchTerm, setSearchTerm] = useState("")
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  useOutsideClick(dropdownRef, () => {
+  useDismiss(dropdownRef, () => {
     if (isOpen) {
       setIsOpen(false)
       setSearchTerm("")

@@ -33,4 +33,6 @@ yarn dev
 
 ### Click Outside
 
-Uses a custom `useOutsideClick` hook to close the dropdown when clicking outside the component.
+Uses a custom `useDismiss` hook to close the dropdown when clicking outside the component.
+Uses a custom `useSwap` hook to handle logic of the SwapForm.
+Uses a custom `useToast` hook to close the Toast.

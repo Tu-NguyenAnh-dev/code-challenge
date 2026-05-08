@@ -1,7 +1,7 @@
 /** @format */
 
 import React, { useEffect, useMemo, useState } from "react"
-import { CurrencyPanel } from "./CurrencyPanel"
+import { CurrencyInput } from "./CurrencyInput"
 import { ArrowDownUp, Loader2, Trash2 } from "lucide-react"
 import { useSwap } from "../hooks/useSwap"
 import { useToasts } from "../hooks/useToasts"
@@ -60,7 +60,7 @@ export const SwapForm: React.FC = () => {
         <h1 className="text-2xl font-semibold text-center text-slate-900 mb-1">Currency Swap</h1>
         <p className="text-xs text-center text-slate-500">Confirm step + history + toasts</p>
 
-        <CurrencyPanel
+        <CurrencyInput
           label="You Pay"
           tokens={tokens}
           selectedToken={fromToken}
@@ -83,7 +83,7 @@ export const SwapForm: React.FC = () => {
           </button>
         </div>
 
-        <CurrencyPanel
+        <CurrencyInput
           label="You Receive (Estimated)"
           tokens={tokens}
           selectedToken={toToken}

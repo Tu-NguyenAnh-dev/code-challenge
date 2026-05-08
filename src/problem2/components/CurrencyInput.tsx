@@ -18,7 +18,7 @@ interface CurrencyPanelProps {
   isTokenSelectorDisabled?: boolean
 }
 
-export const CurrencyPanel: React.FC<CurrencyPanelProps> = ({
+export const CurrencyInput: React.FC<CurrencyPanelProps> = ({
   label,
   tokens,
   selectedToken,
