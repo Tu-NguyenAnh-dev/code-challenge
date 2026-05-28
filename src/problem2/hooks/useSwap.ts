@@ -39,16 +39,6 @@ const formatAmount = (value: number) => {
   return value.toFixed(DEFAULT_PRECISION)
 }
 
-const formatUsd = (value: number) => {
-  if (!Number.isFinite(value)) return "$0.00"
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(value)
-}
-
-const formatTokenAmount = (value: number) => {
-  if (!Number.isFinite(value)) return ""
-  return value.toFixed(DEFAULT_PRECISION)
-}
-
 const pickInitialTokens = (tokens: Token[]) => {
   const from = tokens.find((t) => t.currency === "ETH") ?? tokens[0] ?? null
   const to = tokens.find((t) => t.currency === "USD") ?? tokens[1] ?? tokens[0] ?? null
@@ -73,7 +63,6 @@ export const useSwap = () => {
 
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
-  const [lastSwap, setLastSwap] = useState<SwapSnapshot | null>(null)
   const [history, setHistory] = useState<SwapHistoryItem[]>([])
 
   useEffect(() => {
@@ -186,61 +175,6 @@ export const useSwap = () => {
     setToAmount(prevFromAmount)
   }
 
-  const fromBalance = useMemo(() => {
-    if (!fromToken) return 0
-    // Demo balances to match the reference UI style.
-    if (fromToken.currency === "SOL") return 20.6
-    if (fromToken.currency === "ETH") return 1.25
-    return 100
-  }, [fromToken])
-
-  const toAvailableUsd = useMemo(() => {
-    // Demo "Available $xx" line in reference UI.
-    return 90530.4
-  }, [])
-
-  const fromFiatText = useMemo(() => {
-    if (!fromToken || !isValidPositiveNumberString(fromAmount)) return "$0.00"
-    return formatUsd(Number(fromAmount) * fromToken.price)
-  }, [fromToken, fromAmount])
-
-  const toFiatText = useMemo(() => {
-    if (!toToken || !isValidPositiveNumberString(toAmount)) return "$0.00"
-    return formatUsd(Number(toAmount) * toToken.price)
-  }, [toToken, toAmount])
-
-  const feeFromTokenAmount = useMemo(() => {
-    if (!fromToken || !isValidPositiveNumberString(fromAmount)) return null
-    return Number(fromAmount) * FEE_RATE
-  }, [fromToken, fromAmount])
-
-  const feeUsdText = useMemo(() => {
-    if (!fromToken || feeFromTokenAmount == null) return "$0.00"
-    return formatUsd(feeFromTokenAmount * fromToken.price)
-  }, [fromToken, feeFromTokenAmount])
-
-  const feeTokenText = useMemo(() => {
-    if (!fromToken || feeFromTokenAmount == null) return ""
-    return `${formatTokenAmount(feeFromTokenAmount)} ${fromToken.currency}`
-  }, [fromToken, feeFromTokenAmount])
-
-  const receiveAfterFeeAmount = useMemo(() => {
-    if (!toToken || !isValidPositiveNumberString(toAmount)) return null
-    return Number(toAmount) * (1 - FEE_RATE)
-  }, [toToken, toAmount])
-
-  const receiveAfterFeeText = useMemo(() => {
-    if (!toToken || receiveAfterFeeAmount == null) return ""
-    return `${formatTokenAmount(receiveAfterFeeAmount)} ${toToken.currency}`
-  }, [toToken, receiveAfterFeeAmount])
-
-  const handleMaxFrom = () => {
-    setDirection("from")
-    setFromAmount(fromBalance.toFixed(2))
-    setError(null)
-    setSuccessMessage(null)
-  }
-
   const validateInputs = (): SwapSnapshot | null => {
     if (!fromToken || !toToken) {
       setError("Please select both 'From' and 'To' currencies.")
@@ -274,7 +208,6 @@ export const useSwap = () => {
     },
     onSuccess: (snapshot) => {
       setSuccessMessage(`Successfully swapped ${snapshot.fromAmount} ${snapshot.fromToken.currency} for ${snapshot.toAmount} ${snapshot.toToken.currency}!`)
-      setLastSwap(snapshot)
       const item: SwapHistoryItem = {
         id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
         timeMs: Date.now(),
@@ -323,16 +256,7 @@ export const useSwap = () => {
     direction,
     fromAmount,
     toAmount,
-    fromBalance,
-    toAvailableUsd,
-    fromFiatText,
-    toFiatText,
     feeRate: FEE_RATE,
-    feeTokenText,
-    feeUsdText,
-    receiveAfterFeeText,
-    priceImpactText: "< 0.01%",
-    lastSwap,
     history,
     error: error ?? (tokensQuery.isError ? "Failed to load token prices. Check your connection or try again later." : null),
     successMessage,
@@ -353,7 +277,6 @@ export const useSwap = () => {
       handleFromTokenSelect,
       handleToTokenSelect,
       handleSwapCurrencies,
-      handleMaxFrom,
       getSwapSnapshot,
       submitSwap,
       dismissMessages,
